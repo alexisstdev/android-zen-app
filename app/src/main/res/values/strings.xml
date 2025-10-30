@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Zen App</string>
+    <string name="title_blocklist">Bloqueos</string>
+    <string name="title_settings">Ajustes</string>
+    <string name="app_icon">App Icon</string>
+    <string name="app_name_placeholder">App Name</string>
+    <string name="select_apps">Seleccionar Apps</string>
+</resources>
