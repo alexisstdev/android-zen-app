@@ -9,10 +9,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
-    
-    private const val BASE_URL = "http://10.0.2.2:3000/" // Para emulador Android
-    // Para dispositivo físico, usa la IP de tu máquina: "http://192.168.x.x:3000/"
-    
+
+    private const val BASE_URL = "https://api-production-8723.up.railway.app/"
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }

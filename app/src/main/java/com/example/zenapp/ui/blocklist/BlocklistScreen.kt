@@ -161,140 +161,141 @@ fun BlocklistScreen(
                 }
             }
 
-        Text(
-            text = "Pausar por",
-            fontSize = 20.sp,
-            color = Color(0xFFE1E1E1),
-            modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
-        )
-
-        SpinnerDropdown(
-            options = listOf("5 segundos", "10 segundos", "30 segundos", "1 minuto", "5 minutos", "10 minutos"),
-            selectedOption = uiState.pauseTime,
-            onOptionSelected = viewModel::updatePauseTime,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        Text(
-            text = "Con el mensaje",
-            fontSize = 20.sp,
-            color = Color(0xFFE1E1E1),
-            modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
-        )
-
-        OutlinedTextField(
-            value = uiState.customMessage,
-            onValueChange = viewModel::updateCustomMessage,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            minLines = 3,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFF1E1E1E),
-                unfocusedContainerColor = Color(0xFF1E1E1E),
-                focusedTextColor = Color(0xFFE1E1E1),
-                unfocusedTextColor = Color(0xFFE1E1E1),
-                focusedBorderColor = Color(0xFF333333),
-                unfocusedBorderColor = Color(0xFF333333)
-            )
-        )
-
-        Text(
-            text = "Objetivo diario",
-            fontSize = 20.sp,
-            color = Color(0xFFE1E1E1),
-            modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
             Text(
-                text = "Abrir cada app",
-                fontSize = 16.sp,
-                color = Color(0xFFE1E1E1)
+                text = "Pausar por",
+                fontSize = 20.sp,
+                color = Color(0xFFE1E1E1),
+                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
             )
 
             SpinnerDropdown(
-                options = listOf("1", "2", "3", "5", "10", "Ilimitado"),
-                selectedOption = uiState.dailyOpens,
-                onOptionSelected = viewModel::updateDailyOpens,
-                modifier = Modifier.weight(1f)
+                options = listOf("5 segundos", "10 segundos", "30 segundos", "1 minuto", "5 minutos", "10 minutos"),
+                selectedOption = uiState.pauseTime,
+                onOptionSelected = viewModel::updatePauseTime,
+                modifier = Modifier.padding(bottom = 24.dp)
             )
 
             Text(
-                text = "veces/día",
-                fontSize = 16.sp,
-                color = Color(0xFF888888)
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Por",
-                fontSize = 16.sp,
-                color = Color(0xFFE1E1E1)
+                text = "Con el mensaje",
+                fontSize = 20.sp,
+                color = Color(0xFFE1E1E1),
+                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
             )
 
-            SpinnerDropdown(
-                options = listOf("5 minutos", "10 minutos", "15 minutos", "30 minutos", "1 hora"),
-                selectedOption = uiState.sessionDuration,
-                onOptionSelected = viewModel::updateSessionDuration,
-                modifier = Modifier.weight(1f)
-            )
-
-            Text(
-                text = "cada vez",
-                fontSize = 16.sp,
-                color = Color(0xFF888888)
-            )
-        }
-
-        Button(
-            onClick = viewModel::saveSettings,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(top = 8.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFBB86FC)
-            ),
-            enabled = !uiState.isSyncing
-        ) {
-            if (uiState.isSyncing) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = Color(0xFF000000),
-                    strokeWidth = 2.dp
+            OutlinedTextField(
+                value = uiState.customMessage,
+                onValueChange = viewModel::updateCustomMessage,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                minLines = 3,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFF1E1E1E),
+                    unfocusedContainerColor = Color(0xFF1E1E1E),
+                    focusedTextColor = Color(0xFFE1E1E1),
+                    unfocusedTextColor = Color(0xFFE1E1E1),
+                    focusedBorderColor = Color(0xFF333333),
+                    unfocusedBorderColor = Color(0xFF333333)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Text(
-                text = when {
-                    uiState.isSyncing -> "Sincronizando..."
-                    uiState.isSaved -> "✓ Guardado"
-                    else -> "Guardar Configuración"
-                },
-                fontSize = 16.sp,
-                color = Color(0xFF000000)
             )
-        }
 
-        LaunchedEffect(uiState.isSaved) {
-            if (uiState.isSaved) {
-                kotlinx.coroutines.delay(2000)
+            Text(
+                text = "Objetivo diario",
+                fontSize = 20.sp,
+                color = Color(0xFFE1E1E1),
+                modifier = Modifier.padding(top = 16.dp, bottom = 12.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Abrir cada app",
+                    fontSize = 16.sp,
+                    color = Color(0xFFE1E1E1)
+                )
+
+                SpinnerDropdown(
+                    options = listOf("1", "2", "3", "5", "10", "Ilimitado"),
+                    selectedOption = uiState.dailyOpens,
+                    onOptionSelected = viewModel::updateDailyOpens,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "veces/día",
+                    fontSize = 16.sp,
+                    color = Color(0xFF888888)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Por",
+                    fontSize = 16.sp,
+                    color = Color(0xFFE1E1E1)
+                )
+
+                SpinnerDropdown(
+                    options = listOf("5 minutos", "10 minutos", "15 minutos", "30 minutos", "1 hora"),
+                    selectedOption = uiState.sessionDuration,
+                    onOptionSelected = viewModel::updateSessionDuration,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = "cada vez",
+                    fontSize = 16.sp,
+                    color = Color(0xFF888888)
+                )
+            }
+
+            Button(
+                onClick = viewModel::saveSettings,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(top = 8.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFBB86FC)
+                ),
+                enabled = !uiState.isSyncing
+            ) {
+                if (uiState.isSyncing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color(0xFF000000),
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Text(
+                    text = when {
+                        uiState.isSyncing -> "Sincronizando..."
+                        uiState.isSaved -> "✓ Guardado"
+                        else -> "Guardar Configuración"
+                    },
+                    fontSize = 16.sp,
+                    color = Color(0xFF000000)
+                )
+            }
+
+            LaunchedEffect(uiState.isSaved) {
+                if (uiState.isSaved) {
+                    kotlinx.coroutines.delay(2000)
+                }
             }
         }
     }
