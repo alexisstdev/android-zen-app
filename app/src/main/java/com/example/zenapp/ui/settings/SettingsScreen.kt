@@ -30,7 +30,7 @@ fun SettingsScreen() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(24.dp)
+            .padding(horizontal = 24.dp)
             .padding(bottom = 16.dp)
     ) {
         // Header

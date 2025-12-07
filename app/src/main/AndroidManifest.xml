@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -27,12 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.appselection.AppSelectionActivity"
-            android:exported="false"
-            android:label="@string/select_apps"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/Theme.ZenApp.NoActionBar" />
         <activity
             android:name=".ui.appblock.AppBlockActivity"
             android:exported="false"
