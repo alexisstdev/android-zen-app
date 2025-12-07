@@ -46,7 +46,6 @@ const storage = {
 	],
 };
 
-// Helper to get or create user
 const getOrCreateUser = (userId) => {
 	if (!storage.users.has(userId)) {
 		storage.users.set(userId, {
@@ -67,10 +66,10 @@ const getOrCreateUser = (userId) => {
 
 // ============ SETTINGS ENDPOINTS ============
 
-// Get user settings
 app.get("/api/v1/users/:userId/settings", (req, res) => {
 	try {
 		const { userId } = req.params;
+		console.log(`[GET] Fetching settings for user: ${userId}`);
 		const user = getOrCreateUser(userId);
 
 		res.json({
@@ -78,6 +77,7 @@ app.get("/api/v1/users/:userId/settings", (req, res) => {
 			data: user.settings,
 		});
 	} catch (error) {
+		console.error(`[GET] Error fetching settings: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -85,11 +85,11 @@ app.get("/api/v1/users/:userId/settings", (req, res) => {
 	}
 });
 
-// Save/Update user settings
 app.post("/api/v1/users/:userId/settings", (req, res) => {
 	try {
 		const { userId } = req.params;
 		const settingsData = req.body;
+		console.log(`[POST] Saving settings for user: ${userId}`);
 
 		const user = getOrCreateUser(userId);
 		user.settings = {
@@ -103,6 +103,7 @@ app.post("/api/v1/users/:userId/settings", (req, res) => {
 			message: "Settings saved successfully",
 		});
 	} catch (error) {
+		console.error(`[POST] Error saving settings: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -110,11 +111,11 @@ app.post("/api/v1/users/:userId/settings", (req, res) => {
 	}
 });
 
-// PUT endpoint (same as POST)
 app.put("/api/v1/users/:userId/settings", (req, res) => {
 	try {
 		const { userId } = req.params;
 		const settingsData = req.body;
+		console.log(`[PUT] Updating settings for user: ${userId}`);
 
 		const user = getOrCreateUser(userId);
 		user.settings = {
@@ -128,6 +129,7 @@ app.put("/api/v1/users/:userId/settings", (req, res) => {
 			message: "Settings updated successfully",
 		});
 	} catch (error) {
+		console.error(`[PUT] Error updating settings: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -141,6 +143,7 @@ app.post("/api/v1/users/:userId/usage/backup", (req, res) => {
 	try {
 		const { userId } = req.params;
 		const usageData = req.body;
+		console.log(`[POST] Backing up usage data for user: ${userId}`);
 
 		const user = getOrCreateUser(userId);
 
@@ -151,7 +154,6 @@ app.post("/api/v1/users/:userId/usage/backup", (req, res) => {
 
 		user.usageBackups.push(backup);
 
-		// Keep only last 30 backups
 		if (user.usageBackups.length > 30) {
 			user.usageBackups = user.usageBackups.slice(-30);
 		}
@@ -162,6 +164,7 @@ app.post("/api/v1/users/:userId/usage/backup", (req, res) => {
 			message: "Usage data backed up successfully",
 		});
 	} catch (error) {
+		console.error(`[POST] Error backing up usage data: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -171,9 +174,9 @@ app.post("/api/v1/users/:userId/usage/backup", (req, res) => {
 
 // ============ DYNAMIC CONTENT ENDPOINTS ============
 
-// Get random mindful prompt
 app.get("/api/v1/mindful_prompts", (req, res) => {
 	try {
+		console.log("[GET] Fetching mindful prompt");
 		const randomPrompt =
 			storage.mindfulPrompts[
 				Math.floor(Math.random() * storage.mindfulPrompts.length)
@@ -186,6 +189,7 @@ app.get("/api/v1/mindful_prompts", (req, res) => {
 			},
 		});
 	} catch (error) {
+		console.error(`[GET] Error fetching mindful prompt: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -193,9 +197,9 @@ app.get("/api/v1/mindful_prompts", (req, res) => {
 	}
 });
 
-// Get daily mini task
 app.get("/api/v1/mini_tasks/daily", (req, res) => {
 	try {
+		console.log("[GET] Fetching daily mini task");
 		const randomTask =
 			storage.miniTasks[Math.floor(Math.random() * storage.miniTasks.length)];
 
@@ -206,6 +210,7 @@ app.get("/api/v1/mini_tasks/daily", (req, res) => {
 			},
 		});
 	} catch (error) {
+		console.error(`[GET] Error fetching mini task: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -213,9 +218,9 @@ app.get("/api/v1/mini_tasks/daily", (req, res) => {
 	}
 });
 
-// Get focus quote
 app.get("/api/v1/quotes/focus", (req, res) => {
 	try {
+		console.log("[GET] Fetching focus quote");
 		const randomQuote =
 			storage.focusQuotes[
 				Math.floor(Math.random() * storage.focusQuotes.length)
@@ -228,6 +233,7 @@ app.get("/api/v1/quotes/focus", (req, res) => {
 			},
 		});
 	} catch (error) {
+		console.error(`[GET] Error fetching focus quote: ${error.message}`);
 		res.status(500).json({
 			success: false,
 			error: error.message,
@@ -238,6 +244,7 @@ app.get("/api/v1/quotes/focus", (req, res) => {
 // ============ HEALTH CHECK ============
 
 app.get("/api/v1/health", (req, res) => {
+	console.log("[GET] Health check");
 	res.json({
 		success: true,
 		message: "ZenApp API is running",
@@ -245,8 +252,7 @@ app.get("/api/v1/health", (req, res) => {
 	});
 });
 
-// Start server
 app.listen(PORT, () => {
-	console.log(`🚀 ZenApp API running on http://localhost:${PORT}`);
-	console.log(`📊 Health check: http://localhost:${PORT}/api/v1/health`);
+	console.log(`ZenApp API running on http://localhost:${PORT}`);
+	console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
 });

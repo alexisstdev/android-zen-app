@@ -31,9 +31,16 @@ import com.example.zenapp.R
 fun AppSelectionScreen(
     onNavigateBack: () -> Unit,
     onConfirm: (List<com.example.zenapp.ui.blocklist.AppItem>) -> Unit,
+    preSelectedApps: List<com.example.zenapp.ui.blocklist.AppItem> = emptyList(),
     viewModel: AppSelectionViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    
+    LaunchedEffect(preSelectedApps) {
+        if (preSelectedApps.isNotEmpty()) {
+            viewModel.setPreSelectedApps(preSelectedApps)
+        }
+    }
 
     Scaffold(
         topBar = {

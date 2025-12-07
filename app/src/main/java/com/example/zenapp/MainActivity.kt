@@ -181,11 +181,13 @@ fun ZenAppNavigation() {
             }
             
             composable(Routes.APP_SELECTION) {
+                val currentSelectedApps = blocklistViewModel.uiState.collectAsState().value.selectedApps
                 AppSelectionScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onConfirm = { selectedApps ->
                         blocklistViewModel.addSelectedApps(selectedApps)
-                    }
+                    },
+                    preSelectedApps = currentSelectedApps
                 )
             }
             

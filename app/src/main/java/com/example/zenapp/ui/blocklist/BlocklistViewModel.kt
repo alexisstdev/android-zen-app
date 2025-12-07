@@ -199,10 +199,6 @@ class BlocklistViewModel(application: Application) : AndroidViewModel(applicatio
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun refreshDynamicContent() {
-        loadDynamicContent()
-    }
-
     fun getSelectedAppsCount(): Int {
         return _uiState.value.selectedApps.size
     }

@@ -36,9 +36,40 @@ class AppSelectionViewModel(application: Application) : AndroidViewModel(applica
     
     private val _uiState = MutableStateFlow(AppSelectionUiState())
     val uiState: StateFlow<AppSelectionUiState> = _uiState.asStateFlow()
+    
+    private var preSelectedPackages: Set<String> = emptySet()
 
     init {
         loadInstalledApps()
+    }
+    
+    fun setPreSelectedApps(selectedApps: List<AppItem>) {
+        preSelectedPackages = selectedApps.map { it.packageName }.toSet()
+        // Re-aplicar selección a las apps ya cargadas
+        _uiState.update { state ->
+            val updatedApps = state.allApps.map { appWithIcon ->
+                if (appWithIcon.appItem.packageName in preSelectedPackages) {
+                    appWithIcon.copy(
+                        appItem = appWithIcon.appItem.copy(isBlocked = true)
+                    )
+                } else {
+                    appWithIcon
+                }
+            }
+            val selectedCount = updatedApps.count { it.appItem.isBlocked }
+            val filteredApps = if (state.searchQuery.isBlank()) {
+                updatedApps
+            } else {
+                updatedApps.filter { 
+                    it.appItem.name.contains(state.searchQuery, ignoreCase = true) 
+                }
+            }
+            state.copy(
+                allApps = updatedApps,
+                filteredApps = filteredApps,
+                selectedCount = selectedCount
+            )
+        }
     }
 
     private fun loadInstalledApps() {
@@ -56,7 +87,7 @@ class AppSelectionViewModel(application: Application) : AndroidViewModel(applica
                         name = appName,
                         packageName = appInfo.packageName,
                         category = AppCategory.OTHER,
-                        isBlocked = false
+                        isBlocked = appInfo.packageName in preSelectedPackages
                     )
                     
                     AppItemWithIcon(
@@ -68,11 +99,13 @@ class AppSelectionViewModel(application: Application) : AndroidViewModel(applica
                 }
             }.sortedBy { it.appItem.name }
             
+            val selectedCount = apps.count { it.appItem.isBlocked }
             _uiState.update { 
                 it.copy(
                     isLoading = false,
                     allApps = apps,
-                    filteredApps = apps
+                    filteredApps = apps,
+                    selectedCount = selectedCount
                 )
             }
         }

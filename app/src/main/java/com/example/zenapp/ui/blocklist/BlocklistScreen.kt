@@ -57,64 +57,7 @@ fun BlocklistScreen(
                         }
                     }
                 }
-            }
-
-            // Dynamic content section
-            if (uiState.focusQuote != null || uiState.dailyTask != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "💡 Inspiración del día",
-                                fontSize = 16.sp,
-                                color = Color(0xFFBB86FC)
-                            )
-                            IconButton(
-                                onClick = { viewModel.refreshDynamicContent() },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Refresh,
-                                    contentDescription = "Actualizar",
-                                    tint = Color(0xFFBB86FC),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                        }
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        if (uiState.focusQuote != null) {
-                            Text(
-                                text = uiState.focusQuote ?: "",
-                                fontSize = 14.sp,
-                                color = Color(0xFFE1E1E1),
-                                lineHeight = 20.sp
-                            )
-                        }
-                        
-                        if (uiState.dailyTask != null) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = "📝 ${uiState.dailyTask}",
-                                fontSize = 13.sp,
-                                color = Color(0xFF888888),
-                                lineHeight = 18.sp
-                            )
-                        }
-                    }
-                }
-            }
+            }           
 
             Text(
                 text = "Antes de abrir",
