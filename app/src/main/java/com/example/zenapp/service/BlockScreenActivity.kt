@@ -1,6 +1,7 @@
-package com.example.zenapp.ui.appblock
+package com.example.zenapp.service
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -15,72 +16,81 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.zenapp.data.local.ZenAppDatabase
 import com.example.zenapp.ui.theme.ZenAppTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
-class AppBlockActivity : ComponentActivity() {
+class BlockScreenActivity : ComponentActivity() {
+    
+    private var countDownTimer: CountDownTimer? = null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Leer configuración de Room
-        val database = ZenAppDatabase.getDatabase(applicationContext)
-        val settings = runBlocking {
-            database.settingsDao().getSettingsOnce()
-        }
+        val appName = intent.getStringExtra("APP_NAME") ?: "App"
+        val pauseTime = intent.getStringExtra("PAUSE_TIME") ?: "30 segundos"
+        val customMessage = intent.getStringExtra("CUSTOM_MESSAGE") 
+            ?: "Mantén el enfoque. Esta app estará disponible en un momento."
         
-        android.util.Log.d("AppBlockActivity", "Settings from Room: $settings")
-        
-        val appName = "Vista Previa"
-        val message = settings?.customMessage ?: "Mantén el enfoque. Esta app estará disponible en un momento."
-        val pauseTime = settings?.pauseTime ?: "30 segundos"
-        
-        android.util.Log.d("AppBlockActivity", "Using message: $message")
-        android.util.Log.d("AppBlockActivity", "Using pauseTime: $pauseTime")
-        
-        val pauseSeconds = parseTimeToSeconds(pauseTime)
+        val pauseMillis = parseTimeToMillis(pauseTime)
         
         setContent {
             ZenAppTheme {
-                var remainingSeconds by remember { mutableIntStateOf(pauseSeconds) }
+                var remainingSeconds by remember { mutableIntStateOf((pauseMillis / 1000).toInt()) }
                 var canProceed by remember { mutableStateOf(false) }
                 
                 LaunchedEffect(Unit) {
-                    while (remainingSeconds > 0) {
-                        delay(1000)
-                        remainingSeconds--
+                    countDownTimer = object : CountDownTimer(pauseMillis, 1000) {
+                        override fun onTick(millisUntilFinished: Long) {
+                            remainingSeconds = (millisUntilFinished / 1000).toInt()
+                        }
+                        
+                        override fun onFinish() {
+                            canProceed = true
+                        }
+                    }.start()
+                }
+                
+                DisposableEffect(Unit) {
+                    onDispose {
+                        countDownTimer?.cancel()
                     }
-                    canProceed = true
                 }
                 
                 BlockScreen(
                     appName = appName,
-                    customMessage = message,
+                    customMessage = customMessage,
                     remainingSeconds = remainingSeconds,
                     canProceed = canProceed,
                     onClose = { finish() },
-                    onProceed = { finish() }
+                    onProceed = { 
+                        // Permitir abrir la app por ahora
+                        finish() 
+                    }
                 )
             }
         }
     }
     
-    private fun parseTimeToSeconds(timeString: String): Int {
+    private fun parseTimeToMillis(timeString: String): Long {
         return when {
             timeString.contains("segundo") -> {
-                timeString.filter { it.isDigit() }.toIntOrNull() ?: 30
+                val seconds = timeString.filter { it.isDigit() }.toLongOrNull() ?: 30
+                seconds * 1000
             }
             timeString.contains("minuto") -> {
-                val minutes = timeString.filter { it.isDigit() }.toIntOrNull() ?: 1
-                minutes * 60
+                val minutes = timeString.filter { it.isDigit() }.toLongOrNull() ?: 1
+                minutes * 60 * 1000
             }
             timeString.contains("hora") -> {
-                val hours = timeString.filter { it.isDigit() }.toIntOrNull() ?: 1
-                hours * 60 * 60
+                val hours = timeString.filter { it.isDigit() }.toLongOrNull() ?: 1
+                hours * 60 * 60 * 1000
             }
-            else -> 30
+            else -> 30000 // Default 30 segundos
         }
+    }
+    
+    override fun onBackPressed() {
+        // Prevenir que el usuario salga presionando back
+        // Solo permitir cerrar con el botón
     }
 }
 
@@ -105,7 +115,7 @@ fun BlockScreen(
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
+            ) {              
                 Text(
                     text = appName,
                     fontSize = 24.sp,
@@ -197,8 +207,8 @@ fun BlockScreen(
                         )
                     }
                 }
-            }
-        
+            
+        }
     }
 }
 

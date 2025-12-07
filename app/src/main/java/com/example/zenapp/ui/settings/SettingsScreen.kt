@@ -1,6 +1,8 @@
 package com.example.zenapp.ui.settings
 
+import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,45 +14,121 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.zenapp.ui.appblock.AppBlockActivity
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen() {
     val context = LocalContext.current
+    var isAccessibilityEnabled by remember { 
+        mutableStateOf(isAccessibilityServiceEnabled(context)) 
+    }
     var isDisabled by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
     var pauseDuration by remember { mutableStateOf("15 minutos") }
     var remainingTime by remember { mutableStateOf(pauseDuration) }
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 16.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Header
         Text(
-            text = "Ajustes Rápidos",
+            text = "Ajustes",
             fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
             color = Color(0xFFE1E1E1),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
+        
+        // Mostrar card de accesibilidad solo si no está activo
+        if (!isAccessibilityEnabled) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF1E1E1E)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Servicio requerido",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFFE1E1E1)
+                            )
+                            Text(
+                                text = "Activar para detectar apps bloqueadas",
+                                fontSize = 13.sp,
+                                color = Color(0xFF888888),
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                        
+                        Button(
+                            onClick = {
+                                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier.height(40.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFBB86FC)
+                            )
+                        ) {
+                            Text(
+                                text = "Activar",
+                                color = Color(0xFF000000),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    
+                    Text(
+                        text = "1. Ve a Accesibilidad en la configuración que se abrirá\n" +
+                              "2. Busca y selecciona \"Zen App\"\n" +
+                              "3. Activa el servicio y acepta los permisos",
+                        fontSize = 13.sp,
+                        color = Color(0xFF666666),
+                        lineHeight = 20.sp
+                    )
+                    
+                    TextButton(
+                        onClick = { 
+                            isAccessibilityEnabled = isAccessibilityServiceEnabled(context)
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(
+                            text = "Ya lo activé",
+                            color = Color(0xFFBB86FC),
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            }
+        }
+        
         // Deshabilitar todos los bloqueos Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
         ) {
             Row(
                 modifier = Modifier
@@ -74,12 +152,9 @@ fun SettingsScreen() {
 
         // Pausar bloqueos Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
         ) {
             Column(
                 modifier = Modifier
@@ -107,7 +182,6 @@ fun SettingsScreen() {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Pause duration dropdown
                 SpinnerDropdown(
                     options = listOf("5 minutos", "15 minutos", "30 minutos", "1 hora", "2 horas", "4 horas"),
                     selectedOption = pauseDuration,
@@ -118,7 +192,6 @@ fun SettingsScreen() {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Remaining time text (only visible when paused)
                 if (isPaused) {
                     Text(
                         text = "Tiempo restante $remainingTime",
@@ -128,7 +201,6 @@ fun SettingsScreen() {
                     )
                 }
 
-                // Pause/Cancel button
                 Button(
                     onClick = {
                         isPaused = !isPaused
@@ -138,7 +210,7 @@ fun SettingsScreen() {
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isPaused) Color(0xFF2D2D2D) else Color(0xFF2D2D2D)
+                        containerColor = Color(0xFF2D2D2D)
                     )
                 ) {
                     Text(
@@ -152,12 +224,9 @@ fun SettingsScreen() {
 
         // Estadísticas Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
         ) {
             Column(
                 modifier = Modifier
@@ -217,14 +286,11 @@ fun SettingsScreen() {
             }
         }
 
-        // Testing Preview Card
+        // Vista Previa Card
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
         ) {
             Column(
                 modifier = Modifier
@@ -266,7 +332,42 @@ fun SettingsScreen() {
                 }
             }
         }
+        
+        // Instrucciones Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Privacidad",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFFE1E1E1)
+                )
+                
+                Text(
+                    text = "ZenApp solo detecta el nombre de las apps que abres. No lee contenido, no registra pulsaciones de teclado, y no recopila información personal.",
+                    fontSize = 13.sp,
+                    color = Color(0xFF888888),
+                    lineHeight = 20.sp
+                )
+            }
+        }
     }
+}
+
+private fun isAccessibilityServiceEnabled(context: Context): Boolean {
+    val service = "${context.packageName}/${context.packageName}.service.AppBlockerService"
+    val enabledServices = Settings.Secure.getString(
+        context.contentResolver,
+        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+    )
+    return enabledServices?.contains(service) == true
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

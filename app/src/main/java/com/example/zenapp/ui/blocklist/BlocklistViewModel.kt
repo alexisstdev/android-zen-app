@@ -30,7 +30,7 @@ data class BlocklistUiState(
 
 class BlocklistViewModel(application: Application) : AndroidViewModel(application) {
     
-    private val repository = ZenAppRepository()
+    private val repository = ZenAppRepository(application)
     private val userId = UserIdProvider.getUserId(application)
     
     private val _uiState = MutableStateFlow(BlocklistUiState())
@@ -121,14 +121,9 @@ class BlocklistViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun addSelectedApps(apps: List<AppItem>) {
         _uiState.update { state ->
-            val currentApps = state.selectedApps.toMutableList()
-            apps.forEach { newApp ->
-                if (currentApps.none { it.packageName == newApp.packageName }) {
-                    currentApps.add(newApp)
-                }
-            }
+            // Reemplazar completamente la lista con las apps seleccionadas
             state.copy(
-                selectedApps = currentApps,
+                selectedApps = apps,
                 isSaved = false
             )
         }

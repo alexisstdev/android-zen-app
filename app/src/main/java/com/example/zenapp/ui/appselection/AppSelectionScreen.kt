@@ -259,10 +259,8 @@ private fun BottomBar(
 
             Button(
                 onClick = onConfirm,
-                enabled = selectedCount > 0,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFBB86FC),
-                    disabledContainerColor = Color(0xFF2E2E2E)
+                    containerColor = Color(0xFFBB86FC)
                 ),
                 shape = RoundedCornerShape(8.dp)
             ) {
